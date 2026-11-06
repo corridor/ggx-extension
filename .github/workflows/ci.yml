@@ -14,7 +14,7 @@ jobs:
   check:
     runs-on: light-job
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -41,7 +41,7 @@ jobs:
       matrix:
         vscode: ["1.102.0", "stable"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: actions/setup-node@v4
