@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: marketplace-publication
@@ -37,7 +38,6 @@ jobs:
           CONFIRMED_PUBLISHER: ${{ vars.CONFIRMED_PUBLISHER }}
       - run: npm run check
       - run: npm audit --audit-level=moderate
-      - run: xvfb-run -a npm run test:integration
       - name: Test current VS Code
         run: xvfb-run -a npm run test:integration
         env:
@@ -52,18 +52,16 @@ jobs:
       - name: Publish the same artifact to the selected registries
         env:
           REGISTRY: ${{ inputs.registry }}
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
           set -euo pipefail
           case "$REGISTRY" in both|vscode|openvsx) ;; *) exit 1 ;; esac
           # Check all needed credentials before attempting either irreversible upload.
-          if [[ "$REGISTRY" != openvsx ]]; then test -n "$VSCE_PAT"; fi
           if [[ "$REGISTRY" != vscode ]]; then test -n "$OVSX_PAT"; fi
           version=$(node -p "require('./package.json').version")
           artifact="ggx-mcp-${version}.vsix"
           if [[ "$REGISTRY" != openvsx ]]; then
-            npx --no-install vsce publish --packagePath "$artifact"
+            npx --no-install vsce publish --packagePath "$artifact" --oidc
           fi
           if [[ "$REGISTRY" != vscode ]]; then
             npx --no-install ovsx publish "$artifact"
