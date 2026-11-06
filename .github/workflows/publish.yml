@@ -1,0 +1,70 @@
+name: Publish marketplaces
+
+# Explicit manual publication only. Select an existing version tag as the workflow ref.
+on:
+  workflow_dispatch:
+    inputs:
+      registry:
+        description: Destination (choose one when recovering a partial publication)
+        type: choice
+        options: [both, vscode, openvsx]
+        default: both
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: marketplace-publication
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: light-job
+    environment: marketplace
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Verify release tag and publisher confirmation
+        run: npm run verify:release
+        env:
+          CONFIRMED_PUBLISHER: ${{ vars.CONFIRMED_PUBLISHER }}
+      - run: npm run check
+      - run: npm audit --audit-level=moderate
+      - run: xvfb-run -a npm run test:integration
+      - name: Test current VS Code
+        run: xvfb-run -a npm run test:integration
+        env:
+          VSCODE_TEST_VERSION: stable
+      - run: npm run package
+      - run: python3 scripts/check-vsix.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: published-vsix
+          path: "*.vsix"
+          if-no-files-found: error
+      - name: Publish the same artifact to the selected registries
+        env:
+          REGISTRY: ${{ inputs.registry }}
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          set -euo pipefail
+          case "$REGISTRY" in both|vscode|openvsx) ;; *) exit 1 ;; esac
+          # Check all needed credentials before attempting either irreversible upload.
+          if [[ "$REGISTRY" != openvsx ]]; then test -n "$VSCE_PAT"; fi
+          if [[ "$REGISTRY" != vscode ]]; then test -n "$OVSX_PAT"; fi
+          version=$(node -p "require('./package.json').version")
+          artifact="ggx-mcp-${version}.vsix"
+          if [[ "$REGISTRY" != openvsx ]]; then
+            npx --no-install vsce publish --packagePath "$artifact"
+          fi
+          if [[ "$REGISTRY" != vscode ]]; then
+            npx --no-install ovsx publish "$artifact"
+          fi
