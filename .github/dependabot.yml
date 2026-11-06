@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      development:
+        patterns: ["*"]
+    ignore:
+      # Keep API typings at the minimum editor version; update the engine and host test together.
+      - dependency-name: "@types/vscode"
+        update-types: [version-update:semver-minor, version-update:semver-major]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
