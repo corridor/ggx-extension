@@ -3,7 +3,7 @@
   "displayName": "GenGuardX MCP",
   "description": "Connect your editor's AI assistant to your GenGuardX MCP server using a configurable endpoint and OAuth.",
   "version": "0.1.0",
-  "publisher": "genguardx",
+  "publisher": "CorridorPlatforms",
   "author": "GenGuardX",
   "license": "MIT",
   "homepage": "https://genguardx.ai/",

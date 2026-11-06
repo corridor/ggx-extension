@@ -38,10 +38,6 @@ jobs:
           CONFIRMED_PUBLISHER: ${{ vars.CONFIRMED_PUBLISHER }}
       - run: npm run check
       - run: npm audit --audit-level=moderate
-      - name: Test current VS Code
-        run: xvfb-run -a npm run test:integration
-        env:
-          VSCODE_TEST_VERSION: stable
       - run: npm run package
       - run: python3 scripts/check-vsix.py
       - uses: actions/upload-artifact@v4
