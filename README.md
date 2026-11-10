@@ -27,7 +27,7 @@ If the same server is already configured in `mcp.json`, disable or remove the du
 
 The setup dialog appears once per editor profile and remembers cancellation. **The status bar always exposes setup:** click **GGX: Set Up** to enter a URL, or **GGX: Connect** to use your saved endpoint. These buttons reuse the same setup/connect commands, not a separate implementation. Existing valid endpoints and intentionally disabled configuration do not trigger surprise dialogs or connections on reload. Restricted Mode defers onboarding until the workspace is trusted. **GGX: MCP** means startup was handed to the editor, not that authentication has succeeded; use MCP: List Servers to inspect the actual connection.
 
-Automatic startup uses the editor's built-in MCP start command because there is no stable public MCP lifecycle API. It is integration-tested on the minimum/current VS Code versions. Hosts without that command get a safe fallback to **MCP: List Servers → GenGuardX → Start**. OAuth state and completion remain owned by the editor; a submitted URL is not proof that sign-in succeeded.
+Automatic startup uses the editor's built-in MCP start command because there is no stable public MCP lifecycle API. An integration test covers it in VS Code. Hosts without that command get a safe fallback to **MCP: List Servers → GenGuardX → Start**. OAuth state and completion remain owned by the editor; a submitted URL is not proof that sign-in succeeded.
 
 This configures the editor's native MCP client. Assistants such as Codex with their own MCP configuration still need to be connected separately; editor OAuth credentials are not copied to them.
 
@@ -85,7 +85,7 @@ npm run test:integration
 npm run package
 ```
 
-On headless Linux, use `xvfb-run -a npm run test:integration`. Press **F5** to open an Extension Development Host. The generated `ggx-mcp-0.1.2.vsix` can be installed in a compatible editor. If the profile already dismissed setup, use **GGX: Set Up** in the status bar; reinstalling does not reset profile state.
+Press **F5** to open an Extension Development Host. The generated `ggx-mcp-0.1.2.vsix` can be installed in a compatible editor. If the profile already dismissed setup, use **GGX: Set Up** in the status bar; reinstalling does not reset profile state.
 
 Maintainers: see `PUBLISHING.md` in the source checkout for publisher setup, required public repository metadata, release checks, and publishing the **same VSIX** to Visual Studio Marketplace and Open VSX. The `genguardx` publisher is provisional until ownership is confirmed. Marketplace publication is not automatic.
 
