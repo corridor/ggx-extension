@@ -48,17 +48,15 @@ jobs:
       - name: Publish the same artifact to the selected registries
         env:
           REGISTRY: ${{ inputs.registry }}
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
           set -euo pipefail
           case "$REGISTRY" in both|vscode|openvsx) ;; *) exit 1 ;; esac
-          # Check all needed credentials before attempting either irreversible upload.
-          if [[ "$REGISTRY" != vscode ]]; then test -n "$OVSX_PAT"; fi
           version=$(node -p "require('./package.json').version")
           artifact="ggx-mcp-${version}.vsix"
+          # Both registries authenticate with this job's GitHub OIDC token; no publishing secrets.
           if [[ "$REGISTRY" != openvsx ]]; then
             npx --no-install vsce publish --packagePath "$artifact" --oidc
           fi
           if [[ "$REGISTRY" != vscode ]]; then
-            npx --no-install ovsx publish "$artifact"
+            npx --no-install ovsx publish "$artifact" --trusted-publishing
           fi
