@@ -6,6 +6,7 @@
 - Reuse existing configure/connect commands for all setup entry points; centralize endpoint parsing in the user-settings reader.
 - Show setup progress and disabled state without claiming OAuth has completed.
 - Explicitly wire F5 to the existing npm build script.
+- Publish to Open VSX with trusted publishing (GitHub OIDC) instead of a stored access token.
 
 ## 0.1.1
 
