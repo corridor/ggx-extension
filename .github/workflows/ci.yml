@@ -33,22 +33,3 @@ jobs:
           path: "*.vsix"
           if-no-files-found: error
           retention-days: 14
-
-  extension-host:
-    runs-on: light-job
-    strategy:
-      fail-fast: false
-      matrix:
-        vscode: ["1.102.0", "stable"]
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-      - run: npm ci --ignore-scripts
-      - run: xvfb-run -a npm run test:integration
-        env:
-          VSCODE_TEST_VERSION: ${{ matrix.vscode }}

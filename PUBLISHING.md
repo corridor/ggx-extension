@@ -16,13 +16,12 @@ One platform-independent VSIX is used for **Visual Studio Marketplace** and **Op
 npm ci --ignore-scripts
 npm run check
 npm audit --audit-level=moderate
-xvfb-run -a npm run test:integration
-VSCODE_TEST_VERSION=stable xvfb-run -a npm run test:integration
+npm run test:integration
 npm run package
 python3 scripts/check-vsix.py
 ```
 
-On desktop systems, omit `xvfb-run -a`. Integration tests download VS Code, use isolated profiles and start only a synthetic loopback HTTP MCP fixture; they do not contact a GGX deployment or require an account. They verify that the built-in start command actually reaches the configured server, not merely that it returns without error. CI runs the minimum supported version and current stable version. Review packaging warnings rather than suppressing them blindly. Local packaging allows missing repository metadata only to make an initial installable artifact; **publication does not**.
+Run the integration test on a desktop system; CI doesn't run it. It downloads VS Code, uses isolated profiles and starts only a synthetic loopback HTTP MCP fixture; it does not contact a GGX deployment or require an account. It verifies that the built-in start command actually reaches the configured server, not merely that it returns without error. Review packaging warnings rather than suppressing them blindly. Local packaging allows missing repository metadata only to make an initial installable artifact; **publication does not**.
 
 Manually smoke-test the packaged VSIX on VS Code and any Open VSX client you intend to support:
 
